@@ -25,7 +25,8 @@ export async function renderAdmin(container, params) {
   container.innerHTML = `
     <div class="relative flex h-screen w-full flex-col overflow-hidden">
       <!-- Scrollable content area -->
-      <div class="flex-1 overflow-y-auto px-6 py-10 md:px-12 relative custom-scrollbar">
+      <div class="flex-1 overflow-y-auto px-6 pt-10 pb-32 md:px-12 md:pb-40 relative custom-scrollbar">
+        <div class="max-w-5xl mx-auto w-full">
         
         <header class="mb-12 border-b border-paper-border pb-6">
           <h1 class="text-3xl font-display font-semibold italic text-ink tracking-tight flex items-center gap-3">
@@ -36,7 +37,7 @@ export async function renderAdmin(container, params) {
         </header>
 
         <!-- Input Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:gap-10 md:gap-6 gap-10 mb-16">
           
           <!-- Manual Entry -->
           <div class="flex flex-col">
@@ -58,13 +59,13 @@ export async function renderAdmin(container, params) {
               </div>
               
               <div>
-                <label class="block text-[10px] font-bold text-ink-light uppercase tracking-widest mb-2">Meaning / Translation</label>
-                <input type="text" id="manual-meaning" required class="w-full bg-transparent border-b border-paper-border text-ink px-2 py-2 focus:border-primary outline-none transition-colors placeholder-ink/20" placeholder="A piece of quiet / completely silent" />
+                <label class="block text-[10px] font-bold text-ink-light uppercase tracking-widest mb-2">Meaning / Translation (Optional)</label>
+                <input type="text" id="manual-meaning" class="w-full bg-transparent border-b border-paper-border text-ink px-2 py-2 focus:border-primary outline-none transition-colors placeholder-ink/20" placeholder="A piece of quiet / completely silent" />
               </div>
               
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-[10px] font-bold text-ink-light uppercase tracking-widest mb-2">Category or Chapter</label>
+                  <label class="block text-[10px] font-bold text-ink-light uppercase tracking-widest mb-2">Lesson or Chapter</label>
                   <input type="text" id="manual-chapter" class="w-full bg-transparent border-b border-paper-border text-ink px-2 py-2 focus:border-primary outline-none transition-colors placeholder-ink/20" placeholder="Ch 1" />
                 </div>
                 <div>
@@ -162,7 +163,8 @@ export async function renderAdmin(container, params) {
               <thead class="bg-background-light text-[10px] font-bold uppercase text-ink-light tracking-widest border-b border-paper-border">
                 <tr>
                   <th class="px-4 py-4 font-normal w-10 text-center"><input type="checkbox" id="select-all-vocab" class="accent-primary w-4 h-4 cursor-pointer" /></th>
-                  <th class="px-4 py-4 font-normal">Phrase</th>
+                  <th class="px-4 py-4 font-normal">Phrase & Pīnyīn</th>
+                  <th class="px-4 py-4 font-normal hidden lg:table-cell">Meaning</th>
                   <th class="px-4 py-4 font-normal">Cat</th>
                   <th class="px-4 py-4 font-normal text-center">Seq</th>
                   <th class="px-4 py-4 font-normal text-right">Actions</th>
@@ -178,14 +180,88 @@ export async function renderAdmin(container, params) {
             </table>
           </div>
         </div>
+        </div>
+      </div>
+      
       </div>
       
       <!-- Bottom Navigation Bar -->
       ${await createNavBar('admin')}
+
+      <!-- Edit Modal Overlay -->
+      <div id="edit-modal-overlay" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-surface rounded-2xl shadow-xl w-full max-w-md border border-paper-border overflow-hidden transform scale-95 transition-transform duration-300" id="edit-modal-content">
+          <div class="px-6 py-5 border-b border-paper-border flex justify-between items-center bg-background-light">
+            <h3 class="font-display font-semibold italic text-xl text-ink">Edit Phrase</h3>
+            <button id="close-edit-modal" class="text-ink-light hover:text-ink transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <input type="hidden" id="edit-id" />
+            <div>
+              <label class="block text-[10px] font-bold text-ink uppercase tracking-widest mb-2 pb-1 border-b border-paper border-dotted">Phrase</label>
+              <input type="text" id="edit-word" class="w-full bg-paper border border-paper-border rounded-lg px-4 py-3 text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-chinese text-lg" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-ink uppercase tracking-widest mb-2 pb-1 border-b border-paper border-dotted">Pīnyīn</label>
+              <input type="text" id="edit-pinyin" class="w-full bg-paper border border-paper-border rounded-lg px-4 py-3 text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-sans" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-ink uppercase tracking-widest mb-2 pb-1 border-b border-paper border-dotted">Meaning (Optional)</label>
+              <input type="text" id="edit-meaning" class="w-full bg-paper border border-paper-border rounded-lg px-4 py-3 text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-serif italic" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+               <div>
+                  <label class="block text-[10px] font-bold text-ink uppercase tracking-widest mb-2 pb-1 border-b border-paper border-dotted">Lesson (Optional)</label>
+                  <input type="text" id="edit-chapter" class="w-full bg-paper border border-paper-border rounded-lg px-4 py-3 text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm uppercase" />
+               </div>
+               <div>
+                  <label class="block text-[10px] font-bold text-ink uppercase tracking-widest mb-2 pb-1 border-b border-paper border-dotted">Sequence</label>
+                  <input type="number" id="edit-sequence" class="w-full bg-paper border border-paper-border rounded-lg px-4 py-3 text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm text-center" />
+               </div>
+            </div>
+          </div>
+          <div class="px-6 py-4 bg-background-light border-t border-paper-border flex flex-col gap-3 sm:flex-row sm:justify-between items-center">
+            <button id="btn-delete-phrase" class="w-full sm:w-auto px-5 py-2 rounded-full font-bold text-sm tracking-wide text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2">
+               <span class="material-symbols-outlined text-[16px]">delete</span> Delete
+            </button>
+            <div class="flex gap-3 w-full sm:w-auto">
+              <button id="cancel-edit-btn" class="flex-1 sm:flex-none px-5 py-2 rounded-full font-bold text-sm tracking-wide text-ink-light hover:text-ink hover:bg-paper transition-all">Cancel</button>
+              <button id="save-edit-btn" class="flex-1 sm:flex-none px-5 py-2 rounded-full font-bold text-sm tracking-wide bg-primary text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
-  // UI Setup & Logic
+  // --- Utility Functions ---
+
+  function openEditModal(data) {
+    document.getElementById('edit-id').value = data.id;
+    document.getElementById('edit-word').value = data.word;
+    document.getElementById('edit-pinyin').value = data.pinyin || '';
+    document.getElementById('edit-meaning').value = data.meaning || '';
+    document.getElementById('edit-chapter').value = data.chapter || '';
+    document.getElementById('edit-sequence').value = data.sequence_num || 1;
+    
+    const overlay = document.getElementById('edit-modal-overlay');
+    const content = document.getElementById('edit-modal-content');
+    
+    overlay.classList.remove('opacity-0', 'pointer-events-none');
+    content.classList.remove('scale-95');
+  }
+
+  function closeEditModal() {
+    const overlay = document.getElementById('edit-modal-overlay');
+    const content = document.getElementById('edit-modal-content');
+    
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    content.classList.add('scale-95');
+  }
+
+  // --- Setup Global Listeners ---
   const formManual = document.getElementById('manual-form');
   const btnSubmitManual = document.getElementById('btn-submit-manual');
   
@@ -255,38 +331,123 @@ export async function renderAdmin(container, params) {
 
   const renderTable = () => {
     if (vocabulary.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="4" class="px-4 py-12 text-center text-ink-light italic text-sm">No phrases found. Add some above.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-ink-light italic text-sm">No phrases found. Add some above.</td></tr>';
       updateSelectedState();
       return;
     }
 
-    tableBody.innerHTML = vocabulary.map(v => {
-      return `
-        <tr class="hover:bg-background-light/50 transition-colors group">
-          <td class="px-4 py-4 text-center">
-            <input type="checkbox" class="vocab-checkbox accent-primary w-4 h-4 cursor-pointer" value="${v.id}" />
+    const grouped = vocabulary.reduce((acc, v) => {
+      const cat = v.chapter || 'Uncategorized';
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(v);
+      return acc;
+    }, {});
+
+    const sortedLabels = Object.keys(grouped).sort((a, b) => {
+      if (a === 'Uncategorized') return 1;
+      if (b === 'Uncategorized') return -1;
+      return parseInt(a) - parseInt(b);
+    });
+
+    let html = '';
+    
+    sortedLabels.forEach(label => {
+      const safeLabel = label.toString().replace(/\s+/g, '-');
+      html += `
+        <tr class="bg-background-light hover:bg-paper-border/30 border-y border-paper-border cursor-pointer group-header transition-colors" data-lesson="${safeLabel}">
+          <td class="px-4 py-3 text-center w-10" onclick="event.stopPropagation();">
+            <input type="checkbox" class="group-checkbox accent-primary w-4 h-4 cursor-pointer" data-lesson="${safeLabel}" />
           </td>
-          <td class="px-4 py-4 font-chinese font-bold text-lg text-ink whitespace-nowrap">${v.word}</td>
-          <td class="px-4 py-4 text-ink-light text-[10px] uppercase tracking-widest">${v.chapter || '-'}</td>
-          <td class="px-4 py-4 text-center">
-            <input type="number" class="w-12 bg-transparent border-b border-transparent focus:border-primary text-center text-ink text-xs outline-none transition-colors seq-input" data-id="${v.id}" value="${v.sequence_num || 1}" />
-          </td>
-          <td class="px-4 py-4 text-right">
-            <button data-id="${v.id}" class="delete-btn text-ink-light hover:text-primary transition-colors p-2">
-              <span class="material-symbols-outlined text-[16px]">close</span>
-            </button>
+          <td colspan="5" class="px-4 py-3 text-[10px] font-bold text-ink uppercase tracking-widest">
+            <div class="flex items-center justify-between">
+              <span>${label === 'Uncategorized' ? 'Uncategorized' : 'Lesson ' + label} <span class="text-ink-light font-normal text-xs normal-case ml-2">(${grouped[label].length})</span></span>
+              <span class="material-symbols-outlined text-[16px] text-ink-light transition-transform duration-200 transform -rotate-90 group-icon">expand_more</span>
+            </div>
           </td>
         </tr>
       `;
-    }).join('');
+      
+      html += grouped[label].map(v => `
+        <tr class="hover:bg-background-light/50 transition-colors group group-row-${safeLabel} hidden cursor-pointer edit-row-trigger" 
+            data-id="${v.id}" data-word="${v.word}" data-pinyin="${v.pinyin || ''}" data-meaning="${v.meaning || ''}" data-chapter="${v.chapter || ''}" data-seq="${v.sequence_num || 1}">
+          <td class="px-4 py-4 text-center" onclick="event.stopPropagation();">
+            <input type="checkbox" class="vocab-checkbox accent-primary w-4 h-4 cursor-pointer" value="${v.id}" data-lesson="${safeLabel}" />
+          </td>
+          <td class="px-4 py-4">
+            <div class="flex flex-col gap-1 min-w-[120px]">
+              <span class="font-chinese font-bold text-lg text-ink group-hover:text-primary transition-colors">${v.word}</span>
+              <span class="font-sans text-xs text-ink-light">${v.pinyin || '-'}</span>
+            </div>
+          </td>
+          <td class="px-4 py-4 hidden lg:table-cell">
+             <span class="font-serif italic text-xs text-ink-light line-clamp-2">${v.meaning || '-'}</span>
+          </td>
+          <td class="px-4 py-4 text-ink-light text-[10px] uppercase tracking-widest">${v.chapter || '-'}</td>
+          <td class="px-4 py-4 text-center" onclick="event.stopPropagation();">
+            <input type="number" class="w-12 bg-transparent border-b border-transparent focus:border-primary text-center text-ink text-xs outline-none transition-colors seq-input" data-id="${v.id}" value="${v.sequence_num || 1}" />
+          </td>
+        </tr>
+      `).join('');
+    });
 
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = e.currentTarget.dataset.id;
-        if (confirm('Delete this phrase from the lexicon?')) {
-          await deleteVocabularyWord(id);
-          loadData();
+    tableBody.innerHTML = html;
+
+    // Group checkbox logic
+    document.querySelectorAll('.group-checkbox').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const lesson = e.currentTarget.dataset.lesson;
+        const rows = document.querySelectorAll(`.group-row-${lesson} .vocab-checkbox`);
+        rows.forEach(rowCb => {
+          rowCb.checked = e.target.checked;
+        });
+        updateSelectedState();
+      });
+    });
+
+    // Sub-item logic to update group checkboxes optionally
+    document.querySelectorAll('.vocab-checkbox').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const lesson = e.target.dataset.lesson;
+        const allInLesson = document.querySelectorAll(`.group-row-${lesson} .vocab-checkbox`);
+        const allChecked = Array.from(allInLesson).every(c => c.checked);
+        const groupCb = document.querySelector(`.group-checkbox[data-lesson="${lesson}"]`);
+        if (groupCb) {
+          groupCb.checked = allChecked;
         }
+        updateSelectedState();
+      });
+    });
+
+    // Collapsible logic
+    document.querySelectorAll('.group-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const lesson = e.currentTarget.dataset.lesson;
+        const rows = document.querySelectorAll(`.group-row-${lesson}`);
+        const icon = e.currentTarget.querySelector('.group-icon');
+        
+        const isHidden = rows[0] && rows[0].classList.contains('hidden');
+        if (isHidden) {
+          rows.forEach(r => r.classList.remove('hidden'));
+          icon.classList.remove('-rotate-90');
+        } else {
+          rows.forEach(r => r.classList.add('hidden'));
+          icon.classList.add('-rotate-90');
+        }
+      });
+    });
+  
+    // Modal Edit listener
+    document.querySelectorAll('.edit-row-trigger').forEach(row => {
+      row.addEventListener('click', (e) => {
+        const dataset = e.currentTarget.dataset;
+        openEditModal({
+          id: dataset.id,
+          word: dataset.word,
+          pinyin: dataset.pinyin,
+          meaning: dataset.meaning,
+          chapter: dataset.chapter,
+          sequence_num: dataset.seq
+        });
       });
     });
 
@@ -541,6 +702,68 @@ export async function renderAdmin(container, params) {
       btnSaveBatch.innerHTML = 'Save Batch';
     }
   });
+  
+  // Modal Listeners
+  const modalCloseBtn = document.getElementById('close-edit-modal');
+  const modalCancelBtn = document.getElementById('cancel-edit-btn');
+  const modalSaveBtn = document.getElementById('save-edit-btn');
+  const modalDeleteBtn = document.getElementById('btn-delete-phrase');
+  const modalOverlay = document.getElementById('edit-modal-overlay');
 
-  btnRefreshTable.addEventListener('click', loadData);
+  const closeHandler = () => closeEditModal();
+  modalCloseBtn.addEventListener('click', closeHandler);
+  modalCancelBtn.addEventListener('click', closeHandler);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeEditModal();
+  });
+
+  modalSaveBtn.addEventListener('click', async () => {
+    const id = document.getElementById('edit-id').value;
+    let chapterRaw = document.getElementById('edit-chapter').value.trim();
+    let chapter = parseInt(chapterRaw.replace(/\D/g, ''), 10);
+    if (isNaN(chapter)) chapter = null;
+
+    const updates = {
+      word: document.getElementById('edit-word').value.trim(),
+      pinyin: document.getElementById('edit-pinyin').value.trim(),
+      meaning: document.getElementById('edit-meaning').value.trim(),
+      chapter: chapter,
+      sequence_num: parseInt(document.getElementById('edit-sequence').value) || 1
+    };
+
+    if (!updates.word) return;
+
+    modalSaveBtn.disabled = true;
+    modalSaveBtn.textContent = 'Saving...';
+    try {
+      await updateVocabularyWord(id, updates);
+      await loadData();
+      closeEditModal();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to save changes: ' + e.message);
+    } finally {
+      modalSaveBtn.disabled = false;
+      modalSaveBtn.textContent = 'Save Changes';
+    }
+  });
+
+  modalDeleteBtn.addEventListener('click', async () => {
+    const id = document.getElementById('edit-id').value;
+    if (confirm('Delete this phrase from the lexicon?')) {
+      modalDeleteBtn.disabled = true;
+      modalDeleteBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Deleting...';
+      try {
+        await deleteVocabularyWord(id);
+        await loadData();
+        closeEditModal();
+      } catch (e) {
+        console.error(e);
+        alert('Failed to delete.');
+      } finally {
+        modalDeleteBtn.disabled = false;
+        modalDeleteBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">delete</span> Delete';
+      }
+    }
+  });
 }

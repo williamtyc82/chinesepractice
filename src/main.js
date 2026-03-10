@@ -2,6 +2,7 @@ import './styles/main.css';
 import { renderLearningView } from './pages/learning.js';
 import { renderProfile } from './pages/profile.js';
 import { renderAdmin } from './pages/admin.js';
+import { renderRevision } from './pages/revision.js';
 
 /**
  * Hash-based router for the Application.
@@ -9,6 +10,7 @@ import { renderAdmin } from './pages/admin.js';
 const routes = {
   '': renderLearningView,
   '#practice': renderLearningView,
+  '#revision': renderRevision,
   '#profile': renderProfile,
   '#admin': renderAdmin,
 };

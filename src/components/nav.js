@@ -12,6 +12,7 @@ export async function createNavBar(activeTab) {
 
   const tabs = [
     { id: 'practice', icon: 'edit', label: 'Practice', href: '#practice', filled: true },
+    { id: 'revision', icon: 'history', label: 'Revision', href: '#revision', filled: true },
     { id: 'profile', icon: 'person', label: 'Profile', href: '#profile', filled: true },
   ];
 

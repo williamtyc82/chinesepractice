@@ -181,6 +181,46 @@ export async function getVocabulary() {
 }
 
 /**
+ * Fetch all completed vocabulary for the current user.
+ */
+export async function getCompletedVocabulary() {
+  const client = getSupabaseClient();
+  if (!client) return [];
+
+  const { data: { user } } = await client.auth.getUser();
+  if (!user) return [];
+
+  const { data: progressData, error: progressError } = await client
+    .from('user_progress')
+    .select('character, stars, completed_at')
+    .eq('user_id', user.id);
+
+  if (progressError || !progressData || progressData.length === 0) return [];
+
+  const completedWords = progressData.map(p => p.character);
+
+  const { data: vocabData, error: vocabError } = await client
+    .from('vocabulary')
+    .select('*')
+    .in('word', completedWords)
+    .order('sequence_num', { ascending: true });
+
+  if (vocabError) return [];
+
+  // Combine to inject stars
+  const combined = vocabData.map(v => {
+    const prog = progressData.find(p => p.character === v.word);
+    return {
+      ...v,
+      stars: prog ? prog.stars : 0,
+      completed_at: prog ? prog.completed_at : null
+    };
+  });
+
+  return combined;
+}
+
+/**
  * Add a single new vocabulary word.
  */
 export async function addVocabularyWord(word, pinyin, meaning, chapter, sequence_num = 1) {

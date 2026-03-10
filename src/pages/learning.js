@@ -42,15 +42,15 @@ export async function renderLearningView(container, params) {
       <div class="relative flex h-screen w-full flex-col overflow-hidden bg-background-light">
         <div class="flex-1 overflow-y-auto px-6 py-10 md:px-12 relative custom-scrollbar">
           <header class="mb-10 border-b border-paper-border pb-6">
-            <h1 class="text-3xl font-display font-semibold italic text-ink tracking-tight">Curriculum</h1>
-            <p class="text-ink-light mt-2 font-serif text-sm">Select a category to begin practice.</p>
+            <h1 class="text-3xl font-display font-semibold italic text-ink tracking-tight">听写练习</h1>
+            <p class="text-ink-light mt-2 font-serif text-sm">Select a lesson to begin practice.</p>
           </header>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20">
             ${categoryKeys.map(cat => `
               <a href="#practice?category=${encodeURIComponent(cat)}" class="group block bg-surface border border-paper-border rounded-xl p-6 shadow-sm hover:border-primary transition-all">
                 <div class="flex justify-between items-center mb-4">
-                  <h3 class="text-xl font-display font-bold text-ink group-hover:text-primary transition-colors">${cat === 'Uncategorized' ? 'Uncategorized' : 'Category ' + cat}</h3>
+                  <h3 class="text-xl font-display font-bold text-ink group-hover:text-primary transition-colors">${cat === 'Uncategorized' ? 'Uncategorized' : 'Lesson ' + cat}</h3>
                   <span class="material-symbols-outlined text-ink-light group-hover:text-primary transition-colors">arrow_forward</span>
                 </div>
                 <div class="flex items-center gap-2 text-xs uppercase tracking-widest text-ink-light font-bold">
@@ -104,7 +104,7 @@ export async function renderLearningView(container, params) {
         <span class="material-symbols-outlined text-ink group-hover:text-primary transition-colors text-[24px]">arrow_back</span>
       </button>
       <div class="flex-1 px-4 text-center">
-        <span class="text-[10px] font-bold tracking-widest uppercase text-ink-light block mb-0.5">${phraseData.chapter ? 'Chapter ' + phraseData.chapter : 'Practice Session'}</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase text-ink-light block mb-0.5">${phraseData.chapter ? 'Lesson ' + phraseData.chapter : 'Practice Session'}</span>
         <div class="w-24 h-1 bg-paper-border rounded-full mx-auto overflow-hidden mt-1.5">
           <div id="progress-bar" class="h-full bg-primary transition-all duration-300" style="width: ${(1 / characters.length) * 100}%"></div>
         </div>
@@ -118,15 +118,15 @@ export async function renderLearningView(container, params) {
       <!-- Phrase Meta Info -->
       <div class="w-full max-w-sm mx-auto px-6 text-center mb-10 flex flex-col items-center">
         <!-- Pinyin -->
-        <span id="pinyin-display" class="text-sm font-sans tracking-widest text-ink-light uppercase mb-3">${phraseData.pinyin}</span>
+        <p id="pinyin-display" class="text-sm font-sans tracking-widest text-ink-light uppercase mb-3 break-words break-all mx-auto w-full">${phraseData.pinyin}</p>
         
         <!-- Large Interactive Phrase Display -->
-        <h1 id="phrase-display" class="text-5xl md:text-6xl font-chinese font-black tracking-widest mb-4 flex gap-1 justify-center leading-tight">
+        <h1 id="phrase-display" class="text-4xl md:text-5xl font-chinese font-black tracking-widest mb-4 flex flex-wrap gap-1 justify-center leading-tight">
           ${phraseCharsHtml}
         </h1>
         
         <!-- English Meaning -->
-        <span id="meaning-display" class="text-sm font-serif italic text-ink-light px-4 py-2 border-y border-paper-border/50">${phraseData.meaning}</span>
+        <p id="meaning-display" class="w-full text-sm font-serif italic text-ink-light px-4 py-2 border-y border-paper-border/50 break-words">${phraseData.meaning}</p>
       </div>
 
       <!-- Canvas Area -->
@@ -292,6 +292,21 @@ export async function renderLearningView(container, params) {
     // Ensure the first character gets the right styling
     if (phraseDisplayChars[0]) {
       phraseDisplayChars[0].classList.add('scale-110', 'inline-block');
+    }
+  });
+
+  document.getElementById('btn-sound')?.addEventListener('click', () => {
+    if ('speechSynthesis' in window && phraseData) {
+      // Cancel any ongoing speech to avoid queuing up multiple utterances
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(phraseData.word);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.8; // Slightly slower for language learners
+      
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn("Speech Synthesis is not supported in this browser.");
     }
   });
 
