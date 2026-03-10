@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Learn Chinese characters through elegant handwriting practice" />
+  <title>Chinese Calligraphy Practice</title>
+
+  <!-- Fonts: Cormorant Garamond for display, Outfit for UI, Noto Serif SC for Chinese text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@400;600;900&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#d32f2f", // Classic Chinese Red ink
+            "surface": "#ffffff",
+            "background-light": "#f4f0ec", // Warm cream paper feel
+            "background-dark": "#1a1a1a",
+            "ink": "#1c1917", // Stone gray/black for text
+            "ink-light": "#57534e",
+            "paper-border": "#e7e5e4"
+          },
+          fontFamily: {
+            "display": ["Cormorant Garamond", "serif"],
+            "sans": ["Outfit", "sans-serif"],
+            "chinese": ["Noto Serif SC", "serif"]
+          },
+          boxShadow: {
+            'elegant': '0 10px 40px -10px rgba(0,0,0,0.05)',
+          }
+        },
+      },
+    }
+  </script>
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body class="bg-background-light font-sans text-ink min-h-screen flex flex-col selection:bg-primary/20 selection:text-primary">
+  <div id="app" class="flex-1 w-full max-w-lg mx-auto bg-surface shadow-2xl relative overflow-hidden flex flex-col border-x border-paper-border/50"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
