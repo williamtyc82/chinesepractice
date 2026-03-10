@@ -50,7 +50,7 @@ Just the raw Chinese characters separated by commas.
 Example output: 负责排桌椅,不能插队,注意安全,一片安静`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-flash-image-preview",
+      model: "gemini-1.5-flash",
       contents: [
         { inlineData }, 
         prompt
