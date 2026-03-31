@@ -50,7 +50,7 @@ Just the raw Chinese characters separated by commas.
 Example output: 负责排桌椅,不能插队,注意安全,一片安静`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: [
         { inlineData }, 
         prompt
@@ -74,6 +74,6 @@ Example output: 负责排桌椅,不能插队,注意安全,一片安静`;
 
   } catch (error) {
     console.error('Gemini OCR Error:', error);
-    throw new Error('Failed to extract text from image using Gemini');
+    throw new Error('Failed to extract text from image using Gemini: ' + error.message);
   }
 }

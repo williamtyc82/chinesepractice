@@ -214,7 +214,7 @@ async function renderAuthScreen(container) {
     }
 
     try {
-      await signUpUser(email, password);
+      await signUpUser(email, password, window.location.origin);
       alert('Signup successful! Check your email to confirm, or login if email confirmation is disabled.');
       // Attempt sign in immediately (usually works if email confirmation is off)
       await signInUser(email, password).catch(() => {});

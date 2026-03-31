@@ -19,13 +19,19 @@ export function getSupabaseClient() {
 /**
  * Sign up a new user
  */
-export async function signUpUser(email, password) {
+export async function signUpUser(email, password, redirectTo = null) {
   const client = getSupabaseClient();
   if (!client) throw new Error('Supabase client not initialized');
+
+  const options = {};
+  if (redirectTo) {
+    options.emailRedirectTo = redirectTo;
+  }
 
   const { data, error } = await client.auth.signUp({
     email,
     password,
+    options
   });
 
   if (error) throw error;
