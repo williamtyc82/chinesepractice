@@ -48,7 +48,7 @@ export function createHanziBox(containerEl, character, options = {}) {
     drawingColor: theme.drawingColor,
     highlightColor: theme.highlightColor,
     highlightCompleteColor: theme.highlightCompleteColor,
-    drawingWidth: 6,
+    drawingWidth: 8,
     showHintAfterMisses: 3,
     highlightOnComplete: true,
     renderer: 'svg',
@@ -70,6 +70,7 @@ export function createHanziBox(containerEl, character, options = {}) {
     containerEl.classList.add('hanzi-quiz-active');
 
     writer.quiz({
+      leniency: 1,
       onCorrectStroke: (strokeData) => {
         // Sparkle effect on correct stroke
         _pulseContainer();

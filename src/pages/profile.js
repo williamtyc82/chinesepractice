@@ -47,7 +47,13 @@ export async function renderProfile(container) {
       <div class="flex-1 overflow-y-auto px-6 py-10 md:px-12 relative custom-scrollbar">
         
         <header class="mb-10 flex items-center justify-between border-b border-paper-border pb-6">
-          <h1 class="text-3xl font-display font-semibold italic text-ink tracking-tight">Your Progress</h1>
+          <div>
+            <h1 class="text-3xl font-display font-semibold italic text-ink tracking-tight">Your Progress</h1>
+            <p class="text-xs text-ink-light mt-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">mail</span>
+              ${user.email}
+            </p>
+          </div>
           <button id="btn-signout" class="size-12 rounded-full border border-paper-border flex items-center justify-center bg-surface shadow-sm click-scale active:bg-ink/5">
             <span class="material-symbols-outlined text-ink-light text-2xl">logout</span>
           </button>
