@@ -295,20 +295,21 @@ export async function renderLearningView(container, params) {
     }
   });
 
-  document.getElementById('btn-sound')?.addEventListener('click', () => {
+  // Shared helper — speaks the current phrase
+  function speakPhrase() {
     if ('speechSynthesis' in window && phraseData) {
-      // Cancel any ongoing speech to avoid queuing up multiple utterances
       window.speechSynthesis.cancel();
-      
       const utterance = new SpeechSynthesisUtterance(phraseData.word);
       utterance.lang = 'zh-CN';
-      utterance.rate = 0.8; // Slightly slower for language learners
-      
+      utterance.rate = 0.8;
       window.speechSynthesis.speak(utterance);
-    } else {
-      console.warn("Speech Synthesis is not supported in this browser.");
     }
-  });
+  }
+
+  // Auto-read when the word first appears
+  speakPhrase();
+
+  document.getElementById('btn-sound')?.addEventListener('click', speakPhrase);
 
   document.getElementById('btn-show-strokes')?.addEventListener('click', () => {
     if (hanziBox) hanziBox.showAnimation();
