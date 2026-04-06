@@ -3,6 +3,7 @@ import { renderLearningView } from './pages/learning.js';
 import { renderProfile } from './pages/profile.js';
 import { renderAdmin } from './pages/admin.js';
 import { renderRevision } from './pages/revision.js';
+import { renderTest } from './pages/test.js';
 
 /**
  * Hash-based router for the Application.
@@ -13,6 +14,7 @@ const routes = {
   '#revision': renderRevision,
   '#profile': renderProfile,
   '#admin': renderAdmin,
+  '#test': renderTest,
 };
 
 async function navigate() {

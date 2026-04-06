@@ -49,15 +49,33 @@ export async function renderRevision(container) {
       `).join('');
 
       const safeLabel = label.toString().replace(/\s+/g, '-');
+      // Get the existing high score for this lesson
+      const highScoreStr = localStorage.getItem(`test_score_${label}`);
+      const highScore = highScoreStr ? parseInt(highScoreStr) : null;
+      
+      let scoreHtml = '';
+      if (highScore !== null) {
+        let scColor = 'text-green-600 bg-green-50';
+        if (highScore < 80) scColor = 'text-primary bg-primary/10';
+        if (highScore < 50) scColor = 'text-ink-light bg-paper-border/50';
+        scoreHtml = `<span class="${scColor} px-2 py-0.5 rounded text-[10px] font-bold tracking-widest ml-2">${highScore}%</span>`;
+      }
+
       return `
         <div class="mb-10">
-          <h2 class="text-xs font-bold text-ink uppercase tracking-widest mb-4 flex items-center justify-between border-b border-paper-border pb-2 cursor-pointer group-header transition-colors hover:text-primary group" data-lesson="${safeLabel}">
-            <div class="flex items-center gap-2">
+          <div class="flex items-center justify-between border-b border-paper-border pb-2 mb-4">
+            <h2 class="text-xs font-bold text-ink uppercase tracking-widest flex flex-1 items-center gap-2 cursor-pointer group-header transition-colors hover:text-primary group" data-lesson="${safeLabel}">
               <span class="material-symbols-outlined text-[16px] text-primary">bookmark</span>
-              <span class="text-ink group-hover:text-primary transition-colors">${title}</span> <span class="text-ink-light font-normal normal-case ml-2">(${grouped[label].length})</span>
-            </div>
-            <span class="material-symbols-outlined text-[16px] text-ink-light transition-transform duration-200 transform -rotate-90 group-icon">expand_more</span>
-          </h2>
+              <span class="text-ink group-hover:text-primary transition-colors">${title}</span> 
+              <span class="text-ink-light font-normal normal-case">(${grouped[label].length})</span>
+              ${scoreHtml}
+              <span class="material-symbols-outlined text-[16px] text-ink-light transition-transform duration-200 transform -rotate-90 group-icon ml-auto mr-4">expand_more</span>
+            </h2>
+            <a href="#test?category=${encodeURIComponent(label)}" class="shrink-0 flex items-center gap-1 bg-ink text-surface hover:bg-black px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest transition-colors shadow-elegant btn-elegant ml-2">
+              <span class="material-symbols-outlined text-[14px]">edit_document</span>
+              Test
+            </a>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 group-row-${safeLabel} hidden">
             ${cardsHtml}
           </div>
